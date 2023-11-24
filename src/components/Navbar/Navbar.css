@@ -286,6 +286,16 @@ transition: 0.5s cubic-bezier(.28,.55,.43,.99);
   width: 90%;
   max-width: 500px; /* Responsive max width */
 }
+@media screen and (max-width: 650px){
+  /* ... other styles ... */
+
+  .app__navbar-login {
+    display: flex; /* changed from none to flex */
+  }
+
+  /* ... other styles ... */
+}
+
 
 /* Close Button */
 .popup .close-button {

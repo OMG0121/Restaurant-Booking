@@ -1,15 +1,45 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import { TbGrill } from "react-icons/tb";
 import { PiForkKnife } from "react-icons/pi";
 
 
 import "./Navbar.css";
+function useOutsideAlerter(ref, onOutsideClick) {
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (ref.current && !ref.current.contains(event.target)) {
+        onOutsideClick();
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [ref, onOutsideClick]);
+}
 
 const Navbar = () => {
   const [toggle, setToggle] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const popupRef = useRef();
+  useOutsideAlerter(popupRef, () => setShowPopup(false));
+
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      console.log("Clicked element: ", event.target);
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        console.log("Click outside popup detected");
+        setShowPopup(false);
+      }
+    };
+  
+    document.addEventListener("mousedown", handleClickOutside);
+  
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleFormSubmit = (event) => {
     event.preventDefault();
@@ -105,29 +135,29 @@ const Navbar = () => {
         )}
       </div>
       {showPopup && (
-        <div className="popup-container">
-          <div className="popup">
-            <button
-              className="close-button"
-              onClick={() => setShowPopup(false)}
-            >
-              ×
-            </button>
-            <h2 className="popup-title">Reserve Your Table</h2>
-            <form onSubmit={handleFormSubmit} className="booking-form">
+  <div className="popup-container" ref={popupRef}>
+    <div className="popup">
+      <button
+        className="close-button"
+        onClick={() => setShowPopup(false)}
+      >
+        ×
+      </button>
+      <h2 className="popup-title">Reserve Your Table</h2>
+      <form onSubmit={handleFormSubmit} className="booking-form">
         <input type="text" placeholder="Your Name" required />
         <input type="email" placeholder="Email Address" required />
         <input type="tel" placeholder="Phone Number" />
         <input type="number" placeholder="Number of Guests" required />
         <input type="date" required />
         <input type="time" required />
+        
         <button type="submit" className="submit-button">Book Now</button>
-        
-        
       </form>
     </div>
   </div>
 )}
+
 {showSuccessMessage && (
         <div className="success-message">Your Booking Done Successfully</div>
       )}
